@@ -24,9 +24,22 @@ RSpec.describe "Users", type: :request do
 
       it 'returns only the users for the specified company' do
         get company_users_path(company_1)
-        
+
         expect(result.size).to eq(company_1.users.size)
         expect(result.map { |element| element['id'] } ).to eq(company_1.users.ids)
+      end
+    end
+
+    context 'when filtering by username' do
+      it 'returns the only the users containing \'ma\' in their name' do
+        create(:user, username: "Mathew")
+        create(:user, username: "max")
+        create(:user, username: "Other name")
+
+        get users_path(username: "ma")
+
+        expect(result.size).to eq(2)
+        expect(result.pluck("username")).to_not include("Other name")
       end
     end
 
